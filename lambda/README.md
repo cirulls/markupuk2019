@@ -22,13 +22,13 @@ This is the step-by-step procedure to create a lambda function for running XSpec
 7. Go to Lambda -> Function, select the function `runXSpecBash` and click on Layers. Click on Add a layer. Select Provide a layer version ARN, copy the version ARN from the previous steps, click on Add and then click on Save. Repeat the same procedure for Saxon and bash.
 8. Set the trigger for the lambda function. In Add trigger select S3 and in Bucket select the S3 bucket where your GitHub code is stored. 
 9. Finally, click on Add and then Save.
-10. To store the HTML reports of the XSpec tests you need to create a new S3 bucket. In the Lambda function this S3 bucket is named `git2s3-report`. 
-11. Make sure to assign permissions in the IAM role of the lambda function in order to access all the relevant S3 buckets. In the lambda function these S3 buckets are named `git2s3-outputbucket-16o2w1dtk7ddf` and  `git2s3-report`. You can start by giving your lambda function IAM role full access to these S3 buckets. After you tested that it is working fine, tidy up the permissions of the IAM role in order to restrict access (e.g. read only access to `git2s3-outputbucket-16o2w1dtk7ddf` and read/write access to `git2s3-report`).
-12. To send an email to users in case of failing test, set up an SNS topic and assign permissions to access SNS to the IAM role of the lambda function. Again, you can start by giving SNSFullAccess to the IAM role and then restrict the permissions after you made sure it works. 
+10. To store the HTML reports of the XSpec tests you need to create a new S3 bucket. In the lambda function this S3 bucket is named `git2s3-report`. 
+11. Make sure to assign permissions in the IAM role of the lambda function in order to access all the relevant S3 buckets. In the lambda function these S3 buckets are named `git2s3-outputbucket-16o2w1dtk7ddf` and  `git2s3-report`. You can start by giving your lambda function's IAM role full access to these S3 buckets. After testing that it works, tidy up the permissions of the IAM role in order to restrict access (e.g. read only access to `git2s3-outputbucket-16o2w1dtk7ddf` and write access to `git2s3-report`).
+12. To send an email to users in case of a failing test, set up an SNS topic and assign permissions to access SNS to the IAM role of the lambda function. Again, you can start by assigning the IAM policy `SNSFullAccess` to the IAM role and restrict the permissions afterwards.
 
 
-## Test the webhook 
+## Test the lambda function
 
-1. Push a dummy commit, then go to Settings -> Webhooks -> Edit and check under Recent Deliveries that the webhook has been trigerred from GitHub. You can redeliver a trigger under Recent Deliveries by clicking on the three dots and then on the Redeliver button.
-2. Check that the S3 bucket associated with the webhook contains the zip file with the GitHub repo. Note that the S3 buckets replicates the URL structure of your branch. 
-3. If nothing happened, check that the Lambda function was triggered under Lambda -> Monitoring and check the CloudWatch logs to see if happened. 
+1. Push a dummy commit that breaks the test suite. To get started you can use and modify the code examples in the [xslt](https://github.com/cirulls/markupuk2019/tree/master/xslt) and [xspec](https://github.com/cirulls/markupuk2019/tree/master/xspec) folders.
+2. Check that the lambda function has been triggered. If not, go to Lambda -> Monitoring and check the CloudWatch logs. 
+3. Check that the S3 bucket with the HTML reports has been updated and that a SNS notification has been sent. If not, check the CloudWatch logs to see what happened.
